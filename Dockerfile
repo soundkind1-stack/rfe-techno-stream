@@ -31,11 +31,11 @@ EXPOSE 10000
 CMD ["bash", "-c", "\
     set -m; \
     \
-    rm -f /home/radio/live.wav /home/radio/live.pipe; \
+    rm -f /home/radio/live.wav /home/radio/live.pipe /home/radio/current_track.txt; \
     mkfifo -m 666 /home/radio/live.pipe; \
     \
     echo '=== RFE: Seeding initial track text ==='; \
-    echo 'Radio Freies Eurasien - Lädt...' > /tmp/current_track.txt; \
+    echo 'Radio Freies Eurasien - Laedt...' > /home/radio/current_track.txt; \
     \
     echo '=== RFE: Starting Health-Check Dummy on Port 10000 ==='; \
     python3 -m http.server 10000 & \
@@ -61,7 +61,7 @@ CMD ["bash", "-c", "\
         -ar 44100 \
         -ac 2 \
         -i /home/radio/live.pipe \
-        -vf \"scale=854:480,format=yuv420p,drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=/tmp/current_track.txt:reload=1:fontcolor=white:fontsize=18:box=1:boxcolor=black@0.6:boxborderw=5:x=(w-text_w)/2:y=30\" \
+        -vf \"scale=854:480,format=yuv420p,drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=/home/radio/current_track.txt:reload=1:fontcolor=white:fontsize=18:box=1:boxcolor=black@0.6:boxborderw=5:x=(w-text_w)/2:y=30\" \
         -c:v libx264 \
         -preset ultrafast \
         -tune zerolatency \
