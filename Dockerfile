@@ -14,7 +14,7 @@ RUN apt-get update && \
         bash && \
     rm -rf /var/lib/apt/lists/*
 
-RUN cp /usr/share/share/zoneinfo/Europe/Berlin /etc/localtime && \
+RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
     echo "Europe/Berlin" > /etc/timezone
 
 WORKDIR /home/radio
