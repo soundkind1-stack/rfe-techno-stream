@@ -11,7 +11,7 @@ RUN apt-get update && \
         dos2unix \
         coreutils \
         python3 \
-        unzip \
+        fonts-dejavu-core \
         bash && \
     rm -rf /var/lib/apt/lists/*
 
@@ -34,17 +34,8 @@ CMD ["bash", "-c", "\
     rm -f /home/radio/live.wav /home/radio/live.pipe; \
     mkfifo -m 666 /home/radio/live.pipe; \
     \
-    echo '=== RFE: Unzipping techno music package ==='; \
-    if [ -d /home/radio/music ]; then \
-      for zipfile in /home/radio/music/*.zip; do \
-        if [ -f \"$zipfile\" ]; then \
-          echo \"Extracting $zipfile...\"; \
-          unzip -j -o \"$zipfile\" -d /home/radio/music/; \
-          rm -f \"$zipfile\"; \
-        fi \
-      done \
-    fi \
-    rm -f /home/radio/music/.gitkeep; \
+    echo '=== RFE: Seeding initial track text ==='; \
+    echo 'Radio Freies Eurasien - Lädt...' > /tmp/current_track.txt; \
     \
     echo '=== RFE: Starting Health-Check Dummy on Port 10000 ==='; \
     python3 -m http.server 10000 & \
@@ -57,7 +48,7 @@ CMD ["bash", "-c", "\
     LIQ_PID=$!; \
     sleep 4; \
     \
-    echo '=== RFE: Starting Unstoppable FFmpeg Auto-Recovery Loop ==='; \
+    echo '=== RFE: Starting Unstoppable FFmpeg Auto-Recovery Loop with Song-Title Overlay ==='; \
     bash -c '\
     while true; do \
       ffmpeg \
@@ -70,7 +61,7 @@ CMD ["bash", "-c", "\
         -ar 44100 \
         -ac 2 \
         -i /home/radio/live.pipe \
-        -vf \"scale=854:480,format=yuv420p\" \
+        -vf \"scale=854:480,format=yuv420p,drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=/tmp/current_track.txt:reload=1:fontcolor=white:fontsize=18:box=1:boxcolor=black@0.6:boxborderw=5:x=(w-text_w)/2:y=30\" \
         -c:v libx264 \
         -preset ultrafast \
         -tune zerolatency \
