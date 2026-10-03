@@ -11,7 +11,6 @@ RUN apt-get update && \
         dos2unix \
         coreutils \
         python3 \
-        fonts-ubuntu \
         bash && \
     rm -rf /var/lib/apt/lists/*
 
@@ -31,11 +30,8 @@ EXPOSE 10000
 CMD ["bash", "-c", "\
     set -m; \
     \
-    rm -f /home/radio/live.wav /home/radio/live.pipe /home/radio/current_track.txt; \
+    rm -f /home/radio/live.wav /home/radio/live.pipe; \
     mkfifo -m 666 /home/radio/live.pipe; \
-    \
-    echo '=== RFE: Seeding initial track text ==='; \
-    echo 'Radio Freies Eurasien - Laedt...' > /home/radio/current_track.txt; \
     \
     echo '=== RFE: Starting Health-Check Dummy on Port 10000 ==='; \
     python3 -m http.server 10000 & \
@@ -48,7 +44,7 @@ CMD ["bash", "-c", "\
     LIQ_PID=$!; \
     sleep 4; \
     \
-    echo '=== RFE: Starting Unstoppable FFmpeg Auto-Recovery Loop with Song-Title Overlay ==='; \
+    echo '=== RFE: Starting Unstoppable FFmpeg Auto-Recovery Loop ==='; \
     bash -c '\
     while true; do \
       ffmpeg \
@@ -61,7 +57,7 @@ CMD ["bash", "-c", "\
         -ar 44100 \
         -ac 2 \
         -i /home/radio/live.pipe \
-        -vf \"scale=854:480,format=yuv420p,drawtext=fontfile=/usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf:textfile=/home/radio/current_track.txt:reload=1:fontcolor=white:fontsize=16:box=1:boxcolor=black@0.6:boxborderw=4:x=(w-text_w)/2:y=35\" \
+        -vf \"scale=854:480,format=yuv420p\" \
         -c:v libx264 \
         -preset ultrafast \
         -tune zerolatency \
