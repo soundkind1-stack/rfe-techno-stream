@@ -27,12 +27,4 @@ RUN dos2unix /home/radio/script.liq
 
 EXPOSE 10000
 
-CMD ["bash", "-c", "rm -f /home/radio/live.pipe && mkfifo -m 666 /home/radio/live.pipe && echo '+++ GERMAN VAULT LIVE TICKER INITIALIZING +++' > /dev/shm/news.txt && python3 -m http.server 10000 & (while true; do python3 -c \"import urllib.request, re, os; \
-try: \
-    xml = urllib.request.urlopen('https://blitz.cloud', timeout=15).read().decode('utf-8'); \
-    titles = re.findall(r'<title>(.*?)</title>', xml)[1:6]; \
-    if titles: \
-        text = ' +++ '.join(titles); \
-        with open('/dev/shm/news.tmp', 'w') as f: f.write('+++ ' + text + ' +++'); \
-        os.rename('/dev/shm/news.tmp', '/dev/shm/news.txt'); \
-except Exception: pass\" 2>/dev/null; sleep 300; done) & liquidsoap /home/radio/script.liq > /tmp/liquidsoap.log 2>&1 & sleep 4 && ffmpeg -re -loop 1 -i /home/radio/background.png -f s16le -ar 44100 -ac 2 -i /home/radio/live.pipe -vf \"scale=1280:720,drawtext=textfile=/dev/shm/news.txt:reload=1:fontcolor=white:fontsize=40:font='DejaVu Sans':box=1:boxcolor=black@0.6:boxborderw=10:y=h-60:x=w-mod(t*120\\,w+tw),format=yuv420p\" -c:v libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv420p -r 2 -g 4 -b:v 400k -maxrate 400k -bufsize 800k -c:a aac -b:a 128k -ar 44100 -ac 2 -f flv \"rtmp://live.twitch.tv/app/live_432847037_vgIqhjQqAIXoS94SUgWTkqVmeyrYJF\""]
+CMD ["bash", "-c", "rm -f /home/radio/live.pipe && mkfifo -m 666 /home/radio/live.pipe && python3 /home/radio/fetch_news.py & python3 -m http.server 10000 & liquidsoap /home/radio/script.liq > /tmp/liquidsoap.log 2>&1 & sleep 4 && ffmpeg -re -stream_loop -1 -r 2 -pattern_type glob -i '/home/radio/dj[1-3].png' -f s16le -ar 44100 -ac 2 -i /home/radio/live.pipe -vf \"scale=1280:720,drawtext=textfile=/dev/shm/news.txt:reload=1:fontcolor=white:fontsize=40:font='DejaVu Sans':box=1:boxcolor=black@0.6:boxborderw=10:y=h-60:x=w-mod(t*120\\,w+tw),format=yuv420p\" -c:v libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv420p -r 2 -g 4 -b:v 400k -maxrate 400k -bufsize 800k -c:a aac -b:a 128k -ar 44100 -ac 2 -f flv \"rtmp://live.twitch.tv/app/live_432847037_vgIqhjQqAIXoS94SUgWTkqVmeyrYJF\""]
