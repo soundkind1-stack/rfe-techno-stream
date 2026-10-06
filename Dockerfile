@@ -79,7 +79,7 @@ CMD ["bash", "-c", "\
         -ar 44100 \
         -ac 2 \
         -f flv \
-        \"rtmp://live.twitch.tv/app/live_1508232326_549kYQXQJHoFg89JbHbUTXfSVYRA4u\" \
+        \"rtmp://live.twitch.tv/app/live_432847037_vgIqhjQqAIXoS94SUgWTkqVmeyrYJF\" \
         >> /tmp/ffmpeg.log 2>&1; \
       sleep 2; \
     done' & \
