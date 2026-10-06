@@ -43,6 +43,11 @@ CMD ["bash", "-c", "\
     echo '=== RFE 1: Starting Automated News Factory background loop ==='; \
     bash -c 'while true; do curl -s \"https://blitz.cloud\" | grep -oP \"(?<=<title>).*?(?=</title>)\" | tail -n +2 | head -n 4 | tr \"\\n\" \" \" | sed \"s/  */ /g\" | sed \"s/^/+++ /; s/ $/ +++/\" > /home/radio/news.txt; sleep 300; done' & \
     \
+    echo '=== RFE 1: Starting Liquidsoap Engine ==='; \
+    liquidsoap /home/radio/script.liq > /tmp/liquidsoap.log 2>&1 & \
+    LIQ_PID=$!; \
+    sleep 4; \
+    \
     echo '=== RFE 1: Starting Unstoppable FFmpeg Auto-Recovery Loop with Live Ticker ==='; \
     bash -c '\
     while true; do \
