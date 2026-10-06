@@ -10,7 +10,6 @@ RUN apt-get update && \
         curl \
         dos2unix \
         coreutils \
-        python3 \
         bash && \
     rm -rf /var/lib/apt/lists/*
 
@@ -21,10 +20,13 @@ WORKDIR /home/radio
 
 RUN mkdir -p /home/radio/music
 
+# Das zwingt Docker, den Cache für deine Bilder komplett zu löschen
+ADD "https://random.org" /tmp/nocache
+
 COPY . /home/radio/
 
 RUN dos2unix /home/radio/script.liq
 
 EXPOSE 10000
 
-CMD ["bash", "-c", "rm -f /home/radio/live.pipe && mkfifo -m 666 /home/radio/live.pipe && python3 /home/radio/fetch_news.py & python3 -m http.server 10000 & liquidsoap /home/radio/script.liq > /tmp/liquidsoap.log 2>&1 & sleep 4 && ffmpeg -re -stream_loop -1 -framerate 2.5 -pattern_type glob -i '/home/radio/dj[1-3].png' -f s16le -ar 44100 -ac 2 -i /home/radio/live.pipe -filter_complex \"[0:v]scale=1280:720[bg]; [bg]drawtext=textfile=/dev/shm/news.txt:reload=1:fontcolor=white:fontsize=40:font='DejaVu Sans':box=1:boxcolor=black@0.6:boxborderw=10:y=h-60:x=w-mod(t*120\\,w+tw),format=yuv420p[txt]; [txt]crop=w*0.8:h:w*0.2:0[cropped]; [0:v][cropped]overlay=w*0.2:0,format=yuv420p\" -c:v libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv420p -r 2.5 -g 5 -b:v 400k -maxrate 400k -bufsize 800k -c:a aac -b:a 128k -ar 44100 -ac 2 -f flv \"rtmp://live.twitch.tv/app/live_432847037_vgIqhjQqAIXoS94SUgWTkqVmeyrYJF\""]
+CMD ["bash", "-c", "rm -f /home/radio/live.pipe && mkfifo -m 666 /home/radio/live.pipe && python3 -m http.server 10000 & liquidsoap /home/radio/script.liq > /tmp/liquidsoap.log 2>&1 & sleep 4 && ffmpeg -re -stream_loop -1 -framerate 2.5 -pattern_type glob -i '/home/radio/dj[1-3].png' -f s16le -ar 44100 -ac 2 -i /home/radio/live.pipe -vf \"scale=1280:720,format=yuv420p\" -c:v libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv420p -r 2.5 -g 5 -b:v 400k -maxrate 400k -bufsize 800k -c:a aac -b:a 128k -ar 44100 -ac 2 -f flv \"rtmp://live.twitch.tv/app/live_432847037_vgIqhjQqAIXoS94SUgWTkqVmeyrYJF\""]
