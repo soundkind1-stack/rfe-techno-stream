@@ -1,32 +1,3 @@
-FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && \
-    apt-get install -y \
-        tzdata \
-        liquidsoap \
-        ffmpeg \
-        curl \
-        dos2unix \
-        coreutils \
-        python3 \
-        bash && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
-    echo "Europe/Berlin" > /etc/timezone
-
-WORKDIR /home/radio
-
-RUN mkdir -p /home/radio/music
-
-COPY . /home/radio/
-
-RUN dos2unix /home/radio/script.liq
-
-EXPOSE 10000
-
 CMD ["bash", "-c", "\
     set -m; \
     \
