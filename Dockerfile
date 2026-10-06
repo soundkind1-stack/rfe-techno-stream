@@ -64,18 +64,18 @@ CMD ["bash", "-c", "\
         -i /home/radio/live.pipe \
         -vf \"drawtext=textfile=/home/radio/news.txt:reload=1:fontcolor=white:fontsize=28:y=h-45:x=w-mod(t*65\\,w+tw),scale=1024:576,format=yuv420p\" \
         -c:v libx264 \
-        -preset ultrafast \
+        -preset fast \
         -tune zerolatency \
         -pix_fmt yuv420p \
         -r 1 \
         -g 2 \
         -keyint_min 2 \
         -sc_threshold 0 \
-        -b:v 150k \
-        -maxrate 150k \
-        -bufsize 300k \
+        -b:v 400k \
+        -maxrate 400k \
+        -bufsize 800k \
         -c:a aac \
-        -b:a 64k \
+        -b:a 128k \
         -ar 44100 \
         -ac 2 \
         -f flv \
