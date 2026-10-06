@@ -43,11 +43,6 @@ CMD ["bash", "-c", "\
     echo '=== RFE 1: Starting Automated News Factory background loop ==='; \
     bash -c 'while true; do curl -s \"https://blitz.cloud\" | grep -oP \"(?<=<title>).*?(?=</title>)\" | tail -n +2 | head -n 4 | tr \"\\n\" \" \" | sed \"s/  */ /g\" | sed \"s/^/+++ /; s/ $/ +++/\" > /home/radio/news.txt; sleep 300; done' & \
     \
-    echo '=== RFE 1: Starting Liquidsoap Engine ==='; \
-    liquidsoap /home/radio/script.liq > /tmp/liquidsoap.log 2>&1 & \
-    LIQ_PID=$!; \
-    sleep 4; \
-    \
     echo '=== RFE 1: Starting Unstoppable FFmpeg Auto-Recovery Loop with Live Ticker ==='; \
     bash -c '\
     while true; do \
@@ -62,8 +57,7 @@ CMD ["bash", "-c", "\
         -ar 44100 \
         -ac 2 \
         -i /home/radio/live.pipe \
-        -vf \"drawtext=textfile=/home/radio/news.txt:reload=1:fontcolor=white:fontsize=28:y=h-45:x=w-mod(t*65\\,w+tw)\" \
-        -vf \"scale=1024:576,format=yuv420p\" \
+        -vf \"drawtext=textfile=/home/radio/news.txt:reload=1:fontcolor=white:fontsize=28:y=h-45:x=w-mod(t*65\\,w+tw),scale=1024:576,format=yuv420p\" \
         -c:v libx264 \
         -preset ultrafast \
         -tune zerolatency \
