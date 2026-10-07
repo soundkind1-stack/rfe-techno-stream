@@ -37,7 +37,7 @@ ffmpeg \
 -re \
 -thread_queue_size 2048 \
 -f image2 \
--framerate 2.5 \
+-framerate 3 \
 -start_number 1 \
 -stream_loop -1 \
 -i /home/radio/dj%d.png \
@@ -48,14 +48,14 @@ ffmpeg \
 -i /home/radio/live.pipe \
 -vf scale=1280:720,format=yuv420p \
 -c:v libx264 \
--preset ultrafast \
--tune zerolatency \
+-preset medium \
+-tune stillimage \
 -pix_fmt yuv420p \
--r 2.5 \
--g 5 \
--b:v 400k \
--maxrate 400k \
--bufsize 800k \
+-r 3 \
+-g 6 \
+-b:v 600k \
+-maxrate 600k \
+-bufsize 1800k \
 -c:a aac \
 -b:a 128k \
 -ar 44100 \
