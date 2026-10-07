@@ -37,9 +37,9 @@ ffmpeg \
 -re \
 -thread_queue_size 2048 \
 -f image2 \
--framerate 0.1 \
+-framerate 2.5 \
 -start_number 1 \
--loop 1 \
+-stream_loop -1 \
 -i /home/radio/dj%d.png \
 -thread_queue_size 2048 \
 -f s16le \
@@ -51,8 +51,8 @@ ffmpeg \
 -preset ultrafast \
 -tune zerolatency \
 -pix_fmt yuv420p \
--r 2 \
--g 4 \
+-r 2.5 \
+-g 5 \
 -b:v 400k \
 -maxrate 400k \
 -bufsize 800k \
